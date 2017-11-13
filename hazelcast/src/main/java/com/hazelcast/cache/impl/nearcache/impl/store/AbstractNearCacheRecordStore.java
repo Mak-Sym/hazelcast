@@ -36,6 +36,8 @@ import com.hazelcast.nio.serialization.Data;
 import com.hazelcast.spi.serialization.SerializationService;
 import com.hazelcast.util.Clock;
 import com.hazelcast.util.ExceptionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.hazelcast.internal.memory.GlobalMemoryAccessorRegistry.MEM;
 import static com.hazelcast.internal.memory.GlobalMemoryAccessorRegistry.MEM_AVAILABLE;
@@ -54,6 +56,7 @@ public abstract class AbstractNearCacheRecordStore<
      */
     protected static final int REFERENCE_SIZE =
             MEM_AVAILABLE ? MEM.arrayIndexScale(Object[].class) : (Integer.SIZE / Byte.SIZE);
+    private static final Logger log = LoggerFactory.getLogger(AbstractNearCacheRecordStore.class);
 
     private static final int MILLI_SECONDS_IN_A_SECOND = 1000;
 
@@ -77,6 +80,7 @@ public abstract class AbstractNearCacheRecordStore<
 
     public AbstractNearCacheRecordStore(NearCacheConfig nearCacheConfig, NearCacheContext nearCacheContext,
                                         NearCacheStatsImpl nearCacheStats) {
+        log.warn("Creating near cache '{}'", nearCacheConfig.getName());
         this.nearCacheConfig = nearCacheConfig;
         this.timeToLiveMillis = nearCacheConfig.getTimeToLiveSeconds() * MILLI_SECONDS_IN_A_SECOND;
         this.maxIdleMillis = nearCacheConfig.getMaxIdleSeconds() * MILLI_SECONDS_IN_A_SECOND;
@@ -205,27 +209,27 @@ public abstract class AbstractNearCacheRecordStore<
     }
 
     protected void onGet(K key, V value, R record) {
-
+        log.warn("\"{}\": get {}", nearCacheConfig.getName(), key);
     }
 
     protected void onGetError(K key, V value, R record, Throwable error) {
-
+        log.warn("\"{}\": getError {}", nearCacheConfig.getName(), key);
     }
 
     protected void onPut(K key, V value, R record, R oldRecord) {
-
+        log.warn("\"{}\": put {} " + value, nearCacheConfig.getName(), key);
     }
 
     protected void onPutError(K key, V value, R record, R oldRecord, Throwable error) {
-
+        log.warn("\"{}\": putError {} " + value, nearCacheConfig.getName(), key);
     }
 
     protected void onRemove(K key, R record, boolean removed) {
-
+        log.warn("\"{}\": remove {} " + removed, nearCacheConfig.getName(), key);
     }
 
     protected void onRemoveError(K key, R record, boolean removed, Throwable error) {
-
+        log.warn("\"{}\": remove error {} " + removed, nearCacheConfig.getName(), key);
     }
 
     protected boolean isEvictionEnabled() {

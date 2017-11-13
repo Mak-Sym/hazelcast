@@ -96,4 +96,7 @@ public interface Data {
      */
     boolean isPortable();
 
+    public void setStringRepresentation(String representation);
+    public String getStringRepresentation();
+
 }

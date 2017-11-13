@@ -56,6 +56,9 @@ import com.hazelcast.util.CollectionUtil;
 import com.hazelcast.util.IterationType;
 import com.hazelcast.util.MapUtil;
 import com.hazelcast.util.executor.DelegatingFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -82,6 +85,8 @@ import static java.util.Collections.emptyMap;
 @SuppressWarnings("checkstyle:classfanoutcomplexity")
 public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, InitializingObject {
 
+    private final static Logger log = LoggerFactory.getLogger(MapProxyImpl.class);
+
     public MapProxyImpl(String name, MapService mapService, NodeEngine nodeEngine, MapConfig mapConfig) {
         super(name, mapService, nodeEngine, mapConfig);
     }
@@ -91,6 +96,8 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(k, NULL_KEY_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
+        log.warn("Attempt to get data for key {} from {}", key, getName());
         return toObject(getInternal(key));
     }
 
@@ -105,7 +112,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(v, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
         Data value = toData(v);
+        value.setStringRepresentation(String.valueOf(v));
+        log.warn("Attempt to put data ({}) for key {} into " + getName(), value, key);
         Data result = putInternal(key, value, ttl, timeunit);
         return toObject(result);
     }
@@ -116,7 +126,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(v, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
         Data value = toData(v);
+        value.setStringRepresentation(String.valueOf(v));
+        log.warn("Attempt to try put data ({}) for key {} into " + getName(), value, key);
         return tryPutInternal(key, value, timeout, timeunit);
     }
 
@@ -131,7 +144,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(v, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
         Data value = toData(v);
+        value.setStringRepresentation(String.valueOf(v));
+        log.warn("Attempt to put if absent data ({}) for key {} into " + getName(), value, key);
         Data result = putIfAbsentInternal(key, value, ttl, timeunit);
         return toObject(result);
     }
@@ -142,7 +158,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(v, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
         Data value = toData(v);
+        value.setStringRepresentation(String.valueOf(v));
+        log.warn("Attempt to put transient data ({}) for key {} into " + getName(), value, key);
         putTransientInternal(key, value, ttl, timeunit);
     }
 
@@ -153,8 +172,11 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(v, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
         Data oldValue = toData(o);
         Data value = toData(v);
+        value.setStringRepresentation(String.valueOf(v));
+        log.warn("Attempt to replace data ({}) for key {} in " + getName(), value, key);
         return replaceInternal(key, oldValue, value);
     }
 
@@ -164,7 +186,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(v, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
         Data value = toData(v);
+        value.setStringRepresentation(String.valueOf(v));
+        log.warn("Attempt to replace data ({}) for key {} in " + getName(), value, key);
         return toObject(replaceInternal(key, value));
     }
 
@@ -179,7 +204,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(v, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
         Data value = toData(v);
+        value.setStringRepresentation(String.valueOf(v));
+        log.warn("Attempt to set {} for key {} in " + getName(), value, key);
         setInternal(key, value, ttl, timeunit);
     }
 
@@ -188,6 +216,8 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(k, NULL_KEY_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
+        log.warn("Attempt remove data for key {} from " + getName(), key);
         Data result = removeInternal(key);
         return toObject(result);
     }
@@ -198,7 +228,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(v, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
         Data value = toData(v);
+        value.setStringRepresentation(String.valueOf(v));
+        log.warn("Attempt to remove {} for key {} from " + getName(), value, key);
         return removeInternal(key, value);
     }
 
@@ -207,6 +240,8 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(k, NULL_KEY_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
+        log.warn("Attempt to delete data for key {} from " + getName(), key);
         deleteInternal(key);
     }
 
@@ -258,6 +293,8 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(key, NULL_KEY_IS_NOT_ALLOWED);
 
         Data dataKey = toData(key, partitionStrategy);
+        dataKey.setStringRepresentation(String.valueOf(key));
+        log.warn("Attempt to try remove data for key {} from " + getName(), key);
         return tryRemoveInternal(dataKey, timeout, timeunit);
     }
 
@@ -266,6 +303,8 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(k, NULL_KEY_IS_NOT_ALLOWED);
 
         Data key = toData(k, partitionStrategy);
+        key.setStringRepresentation(String.valueOf(k));
+        log.warn("Attempt to get async data for key {} from " + getName(), key);
         NodeEngine nodeEngine = getNodeEngine();
         return new DelegatingFuture<V>(getAsyncInternal(key), nodeEngine.getSerializationService());
     }
@@ -290,7 +329,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(value, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data dataKey = toData(key, partitionStrategy);
+        dataKey.setStringRepresentation(String.valueOf(key));
         Data dataValue = toData(value);
+        dataValue.setStringRepresentation(String.valueOf(value));
+        log.warn("Attempt to put async {} for key {} into " + getName(), dataValue, dataKey);
         return new DelegatingFuture<V>(putAsyncInternal(dataKey, dataValue, ttl, timeunit),
                 getNodeEngine().getSerializationService());
     }
@@ -306,7 +348,10 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(value, NULL_VALUE_IS_NOT_ALLOWED);
 
         Data dataKey = toData(key, partitionStrategy);
+        dataKey.setStringRepresentation(String.valueOf(key));
         Data dataValue = toData(value);
+        dataValue.setStringRepresentation(String.valueOf(value));
+        log.warn("Attempt to set async {} for key {} into " + getName(), dataValue, dataKey);
         return new DelegatingFuture<Void>(setAsyncInternal(dataKey, dataValue, ttl, timeunit),
                 getNodeEngine().getSerializationService());
     }
@@ -316,6 +361,8 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
         checkNotNull(key, NULL_KEY_IS_NOT_ALLOWED);
 
         Data dataKey = toData(key, partitionStrategy);
+        dataKey.setStringRepresentation(String.valueOf(key));
+        log.warn("Attempt to remove async data for key {} from " + getName(), dataKey);
         return new DelegatingFuture<V>(removeAsyncInternal(dataKey), getNodeEngine().getSerializationService());
     }
 

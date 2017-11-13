@@ -52,6 +52,8 @@ import com.hazelcast.spi.impl.operationservice.impl.responses.NormalResponse;
 import com.hazelcast.util.Clock;
 import com.hazelcast.util.executor.ManagedExecutorService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
@@ -161,6 +163,7 @@ public abstract class Invocation implements OperationResponseHandler {
 
     // writes to that are normally handled through the INVOKE_COUNT to ensure atomic increments / decrements
     volatile int invokeCount;
+    private final static Logger log = LoggerFactory.getLogger(Invocation.class);
 
     Invocation(Context context, Operation op, int tryCount, long tryPauseMillis,
                long callTimeoutMillis, boolean deserialize) {
@@ -270,6 +273,7 @@ public abstract class Invocation implements OperationResponseHandler {
     }
 
     private void doInvokeLocal(boolean isAsync) {
+        log.warn("Local invocation for operation {} ({}) isAsync = " + isAsync, op.getClass().getName(), op.getServiceName());
         if (op.getCallerUuid() == null) {
             op.setCallerUuid(context.localMemberUuid);
         }
@@ -285,6 +289,7 @@ public abstract class Invocation implements OperationResponseHandler {
     }
 
     private void doInvokeRemote() {
+        log.warn("Remote invocation for operation {} ({})", op.getClass().getName(), op.getServiceName());
         if (!context.operationService.send(op, invTarget)) {
             context.invocationRegistry.deregister(this);
             notifyError(new RetryableIOException("Packet not send to -> " + invTarget));

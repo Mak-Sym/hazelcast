@@ -42,6 +42,8 @@ public class HeapData implements Data {
 
     protected byte[] payload;
 
+    private transient String stringRepresentation;
+
     public HeapData() {
     }
 
@@ -156,6 +158,16 @@ public class HeapData implements Data {
     }
 
     @Override
+    public void setStringRepresentation(String representation) {
+        this.stringRepresentation = representation;
+    }
+
+    @Override
+    public String getStringRepresentation() {
+        return this.stringRepresentation;
+    }
+
+    @Override
     public String toString() {
         return "HeapData{"
                 + "type=" + getType()
@@ -164,6 +176,9 @@ public class HeapData implements Data {
                 + ", totalSize=" + totalSize()
                 + ", dataSize=" + dataSize()
                 + ", heapCost=" + getHeapCost()
+                + ", stringRepresentation=" + String.valueOf(this.stringRepresentation)
                 + '}';
     }
+
+
 }

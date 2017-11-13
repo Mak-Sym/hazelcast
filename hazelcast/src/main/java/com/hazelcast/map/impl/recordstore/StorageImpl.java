@@ -25,6 +25,9 @@ import com.hazelcast.map.impl.record.Record;
 import com.hazelcast.map.impl.record.RecordFactory;
 import com.hazelcast.nio.serialization.Data;
 import com.hazelcast.spi.serialization.SerializationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.hazelcast.map.impl.SizeEstimators.createMapSizeEstimator;
+import static java.lang.String.*;
 
 /**
  * Default implementation of {@link Storage} layer used by a {@link RecordStore}
@@ -39,6 +43,8 @@ import static com.hazelcast.map.impl.SizeEstimators.createMapSizeEstimator;
  * @param <R> the value type to be put in this storage.
  */
 public class StorageImpl<R extends Record> implements Storage<Data, R> {
+
+    private static final Logger log = LoggerFactory.getLogger(StorageImpl.class);
 
     private final RecordFactory<R> recordFactory;
     private final StorageSCHM<R> records;
@@ -67,6 +73,7 @@ public class StorageImpl<R extends Record> implements Storage<Data, R> {
     @Override
     public void put(Data key, R record) {
 
+        log.warn("Putting {} into store", valueOf(record.getValue()));
         ((AbstractRecord) record).setKey(key);
 
         R previousRecord = records.put(key, record);
@@ -81,6 +88,7 @@ public class StorageImpl<R extends Record> implements Storage<Data, R> {
 
     @Override
     public void updateRecordValue(Data key, R record, Object value) {
+        log.warn("Updating record data for {} ({})", key, value == null ? "null" : valueOf(value));
         updateSizeEstimator(-calculateHeapCost(record));
 
         recordFactory.setValue(record, value);
@@ -90,7 +98,9 @@ public class StorageImpl<R extends Record> implements Storage<Data, R> {
 
     @Override
     public R get(Data key) {
-        return records.get(key);
+        R data = records.get(key);
+        log.warn("Reading data for {} ({})", key, data == null ? "null" : valueOf(data.getValue()));
+        return data;
     }
 
     @Override
@@ -125,6 +135,7 @@ public class StorageImpl<R extends Record> implements Storage<Data, R> {
 
     @Override
     public void removeRecord(R record) {
+        log.warn("Removing {} from the store", valueOf(record.getValue()));
         if (record == null) {
             return;
         }
