@@ -250,6 +250,7 @@ public abstract class Invocation implements OperationResponseHandler {
             justification = "We have the guarantee that only a single thread at any given time can change the volatile field")
     private void doInvoke(boolean isAsync) {
         if (!engineActive()) {
+            log.warn("Engine is not active!");
             return;
         }
 
@@ -257,11 +258,13 @@ public abstract class Invocation implements OperationResponseHandler {
 
         // register method assumes this method has run before it is being called so that remote is set correctly
         if (!initInvocationTarget()) {
+            log.warn("Cannot init invocation target!");
             return;
         }
 
         setInvocationTime(op, context.clusterClock.getClusterTime());
         if (!context.invocationRegistry.register(this)) {
+            log.warn("Registering invocation in the invocation registry failed");
             return;
         }
 

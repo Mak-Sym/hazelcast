@@ -88,6 +88,8 @@ import com.hazelcast.util.IterableUtil;
 import com.hazelcast.util.MutableLong;
 import com.hazelcast.util.ThreadUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -185,6 +187,7 @@ abstract class MapProxySupport extends AbstractDistributedObject<MapService> imp
 
     private final int putAllBatchSize;
     private final float putAllInitialSizeFactor;
+    private static final Logger log = LoggerFactory.getLogger(MapProxySupport.class);
 
     protected MapProxySupport(String name, MapService service, NodeEngine nodeEngine, MapConfig mapConfig) {
         super(nodeEngine, service);
@@ -297,8 +300,10 @@ abstract class MapProxySupport extends AbstractDistributedObject<MapService> imp
     protected Object getInternal(Data key) {
         // todo action for read-backup true is not well tested.
         if (getMapConfig().isReadBackupData()) {
+            log.warn("Attempt to get data from the backup for {}", key);
             Object fromBackup = readBackupDataOrNull(key);
             if (fromBackup != null) {
+                log.warn("Data found in the back up!");
                 return fromBackup;
             }
         }

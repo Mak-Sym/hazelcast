@@ -26,6 +26,8 @@ import com.hazelcast.spi.annotation.PrivateApi;
 import com.hazelcast.spi.properties.GroupProperty;
 import com.hazelcast.util.EmptyStatement;
 import com.hazelcast.util.ExceptionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,6 +59,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public final class HazelcastInstanceFactory {
 
     private static final int ADDITIONAL_SLEEP_SECONDS_FOR_NON_FIRST_MEMBERS = 4;
+    private static final Logger log = LoggerFactory.getLogger(HazelcastInstanceFactory.class);
 
     private static final AtomicInteger FACTORY_ID_GEN = new AtomicInteger();
     private static final ConcurrentMap<String, InstanceFuture> INSTANCE_MAP = new ConcurrentHashMap<String, InstanceFuture>(5);
@@ -119,6 +122,7 @@ public final class HazelcastInstanceFactory {
      * @return the configured {@link HazelcastInstance}
      */
     public static HazelcastInstance newHazelcastInstance(Config config) {
+        log.warn("Creating Hazelcast instance with config {}", config);
         if (config == null) {
             config = new XmlConfigBuilder().build();
         }

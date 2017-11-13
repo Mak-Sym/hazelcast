@@ -97,8 +97,9 @@ public class MapProxyImpl<K, V> extends MapProxySupport implements IMap<K, V>, I
 
         Data key = toData(k, partitionStrategy);
         key.setStringRepresentation(String.valueOf(k));
-        log.warn("Attempt to get data for key {} from {}", key, getName());
-        return toObject(getInternal(key));
+        V result = toObject(getInternal(key));
+        log.warn("Attempt to get data for key {} from {} (" + result + ")", key, getName());
+        return result;
     }
 
     @Override
