@@ -22,6 +22,8 @@ import com.hazelcast.spi.OperationResponseHandler;
 import com.hazelcast.spi.impl.operationservice.impl.responses.ErrorResponse;
 import com.hazelcast.spi.impl.operationservice.impl.responses.NormalResponse;
 import com.hazelcast.spi.impl.operationservice.impl.responses.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An {@link OperationResponseHandler} that is used for a remotely executed Operation. So when a calling member
@@ -30,6 +32,7 @@ import com.hazelcast.spi.impl.operationservice.impl.responses.Response;
  */
 final class RemoteInvocationResponseHandler implements OperationResponseHandler {
     private final OperationServiceImpl operationService;
+    private final static Logger log = LoggerFactory.getLogger(RemoteInvocationResponseHandler.class);
 
     RemoteInvocationResponseHandler(OperationServiceImpl operationService) {
         this.operationService = operationService;
@@ -48,7 +51,9 @@ final class RemoteInvocationResponseHandler implements OperationResponseHandler 
             response = (Response) obj;
         }
 
+        log.warn("Sending response {} for operation {}", obj, operation);
         if (!operationService.send(response, operation.getCallerAddress())) {
+            log.error("Cannot send response {} for operation {}", obj, operation);
             operationService.logger.warning("Cannot send response: " + obj + " to " + conn.getEndPoint()
                     + ". " + operation);
         }

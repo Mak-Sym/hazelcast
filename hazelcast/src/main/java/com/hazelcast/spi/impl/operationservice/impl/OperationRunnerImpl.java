@@ -53,6 +53,8 @@ import com.hazelcast.spi.impl.operationservice.impl.responses.CallTimeoutRespons
 import com.hazelcast.spi.impl.operationservice.impl.responses.ErrorResponse;
 import com.hazelcast.spi.impl.operationservice.impl.responses.NormalResponse;
 import com.hazelcast.util.ExceptionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -94,6 +96,7 @@ class OperationRunnerImpl extends OperationRunner implements MetricsProvider {
     private InternalPartition internalPartition;
 
     private final OperationResponseHandler remoteResponseHandler;
+    private final static Logger log = LoggerFactory.getLogger(OperationRunnerImpl.class);
 
     // When partitionId >= 0, it is a partition specific
     // when partitionId = -1, it is generic
@@ -380,6 +383,7 @@ class OperationRunnerImpl extends OperationRunner implements MetricsProvider {
         try {
             Object object = nodeEngine.toObject(packet);
             Operation op = (Operation) object;
+            log.warn("Executing packet {} ({})", packet, op);
             op.setNodeEngine(nodeEngine);
             setCallerAddress(op, caller);
             setConnection(op, connection);
@@ -387,6 +391,7 @@ class OperationRunnerImpl extends OperationRunner implements MetricsProvider {
             setOperationResponseHandler(op);
 
             if (!ensureValidMember(op)) {
+                log.warn("Member for operation {} is not valid!", op);
                 return;
             }
 
@@ -395,6 +400,7 @@ class OperationRunnerImpl extends OperationRunner implements MetricsProvider {
             }
             run(op);
         } catch (Throwable throwable) {
+            log.error("Error executing packet {}", packet);
             // If exception happens we need to extract the callId from the bytes directly!
             long callId = extractOperationCallId(packet, node.getSerializationService());
             operationService.send(new ErrorResponse(throwable, callId, packet.isUrgent()), caller);
@@ -414,6 +420,7 @@ class OperationRunnerImpl extends OperationRunner implements MetricsProvider {
                 throw new HazelcastException(
                         "Op: " + op + " can not return response without call-id!");
             }
+            log.warn("Empty handler is set for {}!!!", op);
             handler = createEmptyResponseHandler();
         }
         op.setOperationResponseHandler(handler);

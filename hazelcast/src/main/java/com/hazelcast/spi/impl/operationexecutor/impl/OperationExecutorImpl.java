@@ -37,6 +37,8 @@ import com.hazelcast.spi.impl.operationexecutor.OperationRunnerFactory;
 import com.hazelcast.spi.impl.operationservice.impl.operations.Backup;
 import com.hazelcast.spi.properties.HazelcastProperties;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -92,6 +94,7 @@ public final class OperationExecutorImpl implements OperationExecutor, MetricsPr
     private final Address thisAddress;
     private final OperationRunner adHocOperationRunner;
     private final int priorityThreadCount;
+    private static final Logger log = LoggerFactory.getLogger(OperationExecutorImpl.class);
 
     public OperationExecutorImpl(HazelcastProperties properties,
                                  LoggingService loggerService,
@@ -334,6 +337,7 @@ public final class OperationExecutorImpl implements OperationExecutor, MetricsPr
 
     @Override
     public void handle(Packet packet) {
+        log.warn("Handling remote operation for {}", packet);
         execute(packet, packet.getPartitionId(), packet.isUrgent());
     }
 

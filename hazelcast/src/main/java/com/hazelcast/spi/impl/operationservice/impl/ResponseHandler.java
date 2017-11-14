@@ -33,6 +33,8 @@ import com.hazelcast.spi.impl.operationservice.impl.responses.CallTimeoutRespons
 import com.hazelcast.spi.impl.operationservice.impl.responses.ErrorResponse;
 import com.hazelcast.spi.impl.operationservice.impl.responses.NormalResponse;
 import com.hazelcast.spi.impl.operationservice.impl.responses.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.hazelcast.internal.metrics.ProbeLevel.MANDATORY;
 import static com.hazelcast.internal.util.counters.MwCounter.newMwCounter;
@@ -58,6 +60,7 @@ public final class ResponseHandler implements PacketHandler, MetricsProvider {
     private final SwCounter responsesError = newSwCounter();
     @Probe(name = "responses[missing]", level = MANDATORY)
     private final MwCounter responsesMissing = newMwCounter();
+    private static final Logger log = LoggerFactory.getLogger(ResponseHandler.class);
 
     ResponseHandler(ILogger logger,
                     InternalSerializationService serializationService,
@@ -78,8 +81,10 @@ public final class ResponseHandler implements PacketHandler, MetricsProvider {
     public void handle(Packet packet) throws Exception {
         Response response = serializationService.toObject(packet);
         Address sender = packet.getConn().getEndPoint();
+        log.warn("Received response for {}", packet);
         try {
             if (response instanceof NormalResponse) {
+                log.warn("This is normal response");
                 NormalResponse normalResponse = (NormalResponse) response;
                 notifyNormalResponse(
                         normalResponse.getCallId(),
@@ -108,14 +113,17 @@ public final class ResponseHandler implements PacketHandler, MetricsProvider {
         responsesBackup.inc();
 
         try {
+            log.warn("This is BackupComplete response");
             Invocation invocation = invocationRegistry.get(callId);
 
             // It can happen that a backup response is send without the Invocation being available anymore.
             // This is because the InvocationRegistry will automatically release invocations where the backup is
             // taking too much time.
             if (invocation == null) {
+                log.warn("invocation == null for BackupComplete response");
                 if (logger.isFinestEnabled()) {
                     logger.finest("No Invocation found for backup response with callId " + callId);
+                    log.error("No Invocation found for backup response with callId " + callId);
                 }
                 return;
             }
@@ -127,6 +135,7 @@ public final class ResponseHandler implements PacketHandler, MetricsProvider {
     }
 
     void notifyErrorResponse(long callId, Object cause, Address sender) {
+        log.warn("Error response for callId {} ({})", callId, cause);
         responsesError.inc();
         Invocation invocation = invocationRegistry.get(callId);
 
@@ -134,6 +143,7 @@ public final class ResponseHandler implements PacketHandler, MetricsProvider {
             responsesMissing.inc();
             if (nodeEngine.isRunning()) {
                 logger.warning("No Invocation found for error response with callId: " + callId + " sent from " + sender);
+                log.warn("No Invocation found for error response with callId: " + callId + " sent from " + sender);
             }
             return;
         }
@@ -146,8 +156,10 @@ public final class ResponseHandler implements PacketHandler, MetricsProvider {
         Invocation invocation = invocationRegistry.get(callId);
 
         if (invocation == null) {
+            log.warn("No invocation found for response with callId {}", callId);
             responsesMissing.inc();
             if (nodeEngine.isRunning()) {
+                log.warn("node engine is not running");
                 logger.warning("No Invocation found for normal response with callId " + callId + " sent from " + sender);
             }
             return;
@@ -156,13 +168,16 @@ public final class ResponseHandler implements PacketHandler, MetricsProvider {
     }
 
     void notifyCallTimeout(long callId, Address sender) {
+        log.warn("Call timeout for callId {}", callId);
         responsesTimeout.inc();
         Invocation invocation = invocationRegistry.get(callId);
 
         if (invocation == null) {
+            log.warn("Invocation is null for callId {}", callId);
             responsesMissing.inc();
             if (nodeEngine.isRunning()) {
                 logger.warning("No Invocation found for call timeout response with callId" + callId + " sent from " + sender);
+                log.warn("No Invocation found for call timeout response with callId" + callId + " sent from " + sender);
             }
             return;
         }
