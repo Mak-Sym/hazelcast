@@ -32,6 +32,8 @@ import com.hazelcast.query.Predicate;
 import com.hazelcast.spi.ExecutionService;
 import com.hazelcast.spi.NodeEngine;
 import com.hazelcast.util.executor.CompletedFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -54,6 +56,7 @@ public class NearCachedMapProxyImpl<K, V> extends MapProxyImpl<K, V> {
     protected NearCache<Data, Object> nearCache;
     protected KeyStateMarker keyStateMarker;
     protected boolean cacheLocalEntries;
+    private static final Logger log = LoggerFactory.getLogger(NearCachedMapProxyImpl.class);
 
     public NearCachedMapProxyImpl(String name, MapService mapService, NodeEngine nodeEngine, MapConfig mapConfig) {
         super(name, mapService, nodeEngine, mapConfig);
@@ -78,6 +81,7 @@ public class NearCachedMapProxyImpl<K, V> extends MapProxyImpl<K, V> {
     // except when it is retrieved from near-cache and near-cache memory format is object
     @Override
     protected Object getInternal(Data key) {
+        log.warn("Getting value form the near cache for {}", key);
         Object value = getCachedValue(key);
         if (value != null) {
             if (isCachedNull(value)) {
