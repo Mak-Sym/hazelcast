@@ -23,24 +23,15 @@ import org.junit.runner.RunWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-@RunWith (HazelcastSerialClassRunner.class)
-@Category (QuickTest.class)
+@RunWith(HazelcastSerialClassRunner.class)
+@Category(QuickTest.class)
 public class SimpleMapConfigTest {
     private HazelcastInstance hazelcast;
 
     @Before
     public void setUp() {
-        hazelcast = Hazelcast.newHazelcastInstance(new Config());
-    }
-
-    @After
-    public void tearDown() {
-        Hazelcast.shutdownAll();
-    }
-
-    @Test
-    public void testConfig() {
-        hazelcast.getConfig().addMapConfig(new MapConfig("my.custom.map.*")
+        Config hazelcastConfig = new Config();
+        hazelcastConfig.addMapConfig(new MapConfig("my.custom.map.*")
                 .setMaxSizeConfig(new MaxSizeConfig(5000, MaxSizeConfig.MaxSizePolicy.PER_NODE))
                 .setTimeToLiveSeconds(3600)
                 .setBackupCount(1)
@@ -54,14 +45,39 @@ public class SimpleMapConfigTest {
                 .setWanReplicationRef(null)
                 .setEntryListenerConfigs(Lists.<EntryListenerConfig>newArrayList())
                 .setMapIndexConfigs(Lists.<MapIndexConfig>newArrayList())
-                .setMergePolicy("com.hazelcast.map.merge.PutIfAbsentMapMergePolicy")
-        );
+                .setMergePolicy("com.hazelcast.map.merge.PutIfAbsentMapMergePolicy"));
+        hazelcast = Hazelcast.newHazelcastInstance(hazelcastConfig);
+    }
 
+    @After
+    public void tearDown() {
+        Hazelcast.shutdownAll();
+    }
+
+    @Test
+    public void testConfig() {
         final String mapName = "my.custom.map.cache";
+        Config config = hazelcast.getConfig();
+
+        config.addMapConfig(new MapConfig(mapName)
+                .setMaxSizeConfig(new MaxSizeConfig(500, MaxSizeConfig.MaxSizePolicy.PER_PARTITION))
+                .setTimeToLiveSeconds(3600)
+                .setBackupCount(1)
+                .setMaxIdleSeconds(3600)
+                .setEvictionPolicy(EvictionPolicy.NONE)
+                .setAsyncBackupCount(0)
+                .setInMemoryFormat(InMemoryFormat.BINARY)
+                .setReadBackupData(false)
+                .setNearCacheConfig(null)
+                .setMapStoreConfig(null)
+                .setWanReplicationRef(null)
+                .setEntryListenerConfigs(Lists.<EntryListenerConfig>newArrayList())
+                .setMapIndexConfigs(Lists.<MapIndexConfig>newArrayList())
+                .setMergePolicy("com.hazelcast.map.merge.PutIfAbsentMapMergePolicy"));
+
         final IMap<String, String> map = hazelcast.getMap(mapName);
 
         MapConfig mapConfig = hazelcast.getConfig().findMapConfig(mapName);
-
         assertThat(mapConfig.getName(), equalTo(mapName));
     }
 }
