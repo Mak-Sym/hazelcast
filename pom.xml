@@ -265,7 +265,7 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>com.github.jerrinot.maven-surefire</groupId>
+                        <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>maven-surefire-common</artifactId>
                         <version>${maven.surefire.plugin.version}-buffered</version>
                     </dependency>
@@ -395,7 +395,7 @@
                         </executions>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
@@ -437,7 +437,7 @@
                         </configuration>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
@@ -524,7 +524,7 @@
                         </configuration>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
@@ -605,7 +605,7 @@
                         </configuration>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
@@ -645,7 +645,7 @@
                         </executions>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
@@ -777,7 +777,7 @@
                         </executions>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
@@ -1001,7 +1001,7 @@
                         </configuration>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
@@ -1075,7 +1075,7 @@
                         </configuration>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
@@ -1150,7 +1150,7 @@
                         </configuration>
                         <dependencies>
                             <dependency>
-                                <groupId>com.github.jerrinot.maven-surefire</groupId>
+                                <groupId>org.apache.maven.surefire</groupId>
                                 <artifactId>maven-surefire-common</artifactId>
                                 <version>${maven.surefire.plugin.version}-buffered</version>
                             </dependency>
