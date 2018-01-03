@@ -201,11 +201,12 @@ public class DynamicConfigurationAwareConfig extends Config {
     private MapConfig getMapConfigInternal(String name, String fallbackName) {
         String baseName = getBaseName(name);
         Map<String, MapConfig> staticMapConfigs = staticConfig.getMapConfigs();
-        MapConfig mapConfig = lookupByPattern(configPatternMatcher, staticMapConfigs, baseName);
+        MapConfig mapConfig = configurationService.findMapConfig(baseName);
         if (mapConfig == null) {
-            mapConfig = configurationService.findMapConfig(baseName);
-        } else {
-            initDefaultMaxSizeForOnHeapMaps(mapConfig.getNearCacheConfig());
+            mapConfig = lookupByPattern(configPatternMatcher, staticMapConfigs, baseName);
+            if(mapConfig != null) {
+                initDefaultMaxSizeForOnHeapMaps(mapConfig.getNearCacheConfig());
+            }
         }
         if (mapConfig == null) {
             mapConfig = staticConfig.getMapConfig(fallbackName);
