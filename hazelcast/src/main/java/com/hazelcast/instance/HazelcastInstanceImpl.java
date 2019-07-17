@@ -362,6 +362,10 @@ public class HazelcastInstanceImpl implements HazelcastInstance, SerializationSe
         return node.getLoggingService();
     }
 
+    public Node getNode() {
+        return node;
+    }
+
     @Override
     public LifecycleServiceImpl getLifecycleService() {
         return lifecycleService;
